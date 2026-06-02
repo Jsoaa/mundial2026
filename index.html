@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mundial 2026 — Tracker Completo</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #D4AF37; --gold-light: #F0D060; --gold-dim: rgba(212,175,55,0.15);
+  --bg: #080c14; --bg2: #0f1620; --bg3: #172030; --bg4: #1e2a3d;
+  --text: #e2e6f0; --muted: #6b7a96; --border: rgba(212,175,55,0.18);
+  --green: #22c55e; --red: #ef4444; --yellow: #eab308; --blue: #3b82f6;
+  --orange: #f97316;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:'Barlow',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+/* ── NAV ── */
+.nav { display:flex; align-items:center; gap:0; background:var(--bg2); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; overflow-x:auto; scrollbar-width:none; }
+.nav::-webkit-scrollbar { display:none; }
+.nav-btn { flex-shrink:0; padding:14px 18px; background:transparent; border:none; color:var(--muted); font-family:'Barlow Condensed',sans-serif; font-size:0.82rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s; white-space:nowrap; }
+.nav-btn:hover { color:var(--gold); }
+.nav-btn.active { color:var(--gold); border-bottom-color:var(--gold); background:rgba(212,175,55,0.05); }
+
+/* ── HERO ── */
+.hero { background:linear-gradient(160deg,#080c14 0%,#0d1828 60%,#080c14 100%); padding:24px 20px 18px; text-align:center; border-bottom:1px solid var(--border); position:relative; overflow:hidden; }
+.hero::before { content:''; position:absolute; top:-80px; left:50%; transform:translateX(-50%); width:600px; height:240px; background:radial-gradient(ellipse,rgba(212,175,55,0.1) 0%,transparent 70%); pointer-events:none; }
+.hero h1 { font-family:'Bebas Neue',sans-serif; font-size:2.4rem; letter-spacing:5px; background:linear-gradient(135deg,var(--gold-light),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.hero p { color:var(--muted); font-family:'Barlow Condensed',sans-serif; font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; margin-top:4px; }
+
+/* ── SECTION ── */
+.section { display:none; padding:14px; max-width:860px; margin:0 auto; padding-bottom:80px; }
+.section.active { display:block; }
+
+/* ── GROUP TABS ── */
+.group-tabs { display:flex; gap:4px; overflow-x:auto; margin-bottom:14px; scrollbar-width:none; flex-wrap:wrap; }
+.group-tabs::-webkit-scrollbar { display:none; }
+.gtab { padding:5px 12px; background:var(--bg3); border:1px solid transparent; color:var(--muted); font-family:'Barlow Condensed',sans-serif; font-size:0.78rem; font-weight:700; letter-spacing:1px; cursor:pointer; border-radius:4px; transition:all 0.15s; white-space:nowrap; }
+.gtab:hover { color:var(--text); border-color:var(--border); }
+.gtab.active { background:var(--gold-dim); border-color:var(--gold); color:var(--gold); }
+
+/* ── STANDING TABLE ── */
+.stand-table { width:100%; border-collapse:collapse; margin-bottom:16px; font-family:'Barlow Condensed',sans-serif; }
+.stand-table th { padding:7px 10px; font-size:0.68rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); font-weight:700; text-align:center; border-bottom:1px solid var(--border); }
+.stand-table th:first-child { text-align:left; }
+.stand-table td { padding:8px 10px; font-size:0.88rem; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04); }
+.stand-table td:first-child { text-align:left; font-weight:600; }
+.stand-table tr.qualified-1 { background:rgba(34,197,94,0.08); }
+.stand-table tr.qualified-2 { background:rgba(59,130,246,0.07); }
+.stand-table tr.qualified-3 { background:rgba(212,175,55,0.05); }
+.pts-cell { font-weight:700; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; color:var(--gold); }
+.form-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin:0 1px; }
+.form-dot.W { background:var(--green); }
+.form-dot.D { background:var(--yellow); }
+.form-dot.L { background:var(--red); }
+
+/* ── MATCH CARD ── */
+.match-card { background:var(--bg2); border:1px solid var(--border); border-radius:8px; margin-bottom:10px; overflow:hidden; transition:border-color 0.2s; }
+.match-card:hover { border-color:rgba(212,175,55,0.35); }
+.match-top { display:flex; align-items:center; padding:12px 14px; gap:8px; }
+.match-date-tag { font-family:'Barlow Condensed',sans-serif; font-size:0.7rem; color:var(--muted); letter-spacing:1px; white-space:nowrap; min-width:62px; }
+.teams-center { flex:1; display:flex; align-items:center; justify-content:center; gap:8px; }
+.t-name { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.95rem; min-width:88px; text-align:center; }
+.score-box { display:flex; align-items:center; gap:4px; }
+.score-num { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:var(--gold); min-width:20px; text-align:center; line-height:1; }
+.score-dash { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; color:var(--muted); }
+.score-pending { font-family:'Barlow Condensed',sans-serif; font-size:0.75rem; color:var(--muted); letter-spacing:1px; }
+
+/* ── STATS ROW ── */
+.stats-row { display:flex; gap:10px; padding:8px 14px 10px; border-top:1px solid rgba(255,255,255,0.04); background:rgba(0,0,0,0.2); flex-wrap:wrap; align-items:flex-start; }
+.stat-chip { display:flex; align-items:center; gap:5px; background:var(--bg3); border:1px solid rgba(255,255,255,0.07); border-radius:4px; padding:4px 8px; font-size:0.74rem; color:var(--muted); font-family:'Barlow Condensed',sans-serif; letter-spacing:0.5px; cursor:default; }
+.stat-chip span { font-weight:700; color:var(--text); }
+.stat-chip.yellow-card { border-color:rgba(234,179,8,0.3); color:var(--yellow); }
+.stat-chip.red-card { border-color:rgba(239,68,68,0.3); color:var(--red); }
+.stat-chip.corner { border-color:rgba(59,130,246,0.3); color:var(--blue); }
+.stat-chip.goal { border-color:rgba(34,197,94,0.3); color:var(--green); }
+
+/* ── RESULT ENTRY PANEL ── */
+.result-panel { background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:14px; margin-top:8px; }
+.result-panel h4 { font-family:'Barlow Condensed',sans-serif; font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:12px; }
+.rp-row { display:flex; gap:8px; margin-bottom:10px; align-items:center; flex-wrap:wrap; }
+.rp-label { font-family:'Barlow Condensed',sans-serif; font-size:0.72rem; color:var(--muted); letter-spacing:1px; text-transform:uppercase; min-width:100px; }
+.rp-input { background:var(--bg2); border:1px solid rgba(255,255,255,0.1); border-radius:4px; color:var(--text); font-family:'Barlow Condensed',sans-serif; font-size:0.9rem; padding:5px 10px; width:60px; text-align:center; }
+.rp-input:focus { outline:none; border-color:var(--gold); }
+.rp-text { background:var(--bg2); border:1px solid rgba(255,255,255,0.1); border-radius:4px; color:var(--text); font-family:'Barlow',sans-serif; font-size:0.82rem; padding:5px 10px; flex:1; min-width:160px; }
+.rp-text:focus { outline:none; border-color:var(--gold); }
+.rp-text::placeholder { color:var(--muted); }
+.btn-save { background:linear-gradient(135deg,var(--gold),#b8960e); color:#000; font-family:'Barlow Condensed',sans-serif; font-size:0.82rem; font-weight:700; letter-spacing:1.5px; padding:7px 18px; border:none; border-radius:4px; cursor:pointer; text-transform:uppercase; transition:opacity 0.2s; }
+.btn-save:hover { opacity:0.85; }
+.btn-clear { background:transparent; color:var(--muted); font-family:'Barlow Condensed',sans-serif; font-size:0.78rem; font-weight:700; letter-spacing:1px; padding:7px 12px; border:1px solid rgba(255,255,255,0.1); border-radius:4px; cursor:pointer; text-transform:uppercase; transition:all 0.2s; }
+.btn-clear:hover { color:var(--red); border-color:var(--red); }
+.toggle-entry { background:transparent; border:1px solid var(--border); color:var(--gold); font-family:'Barlow Condensed',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:1px; padding:4px 10px; border-radius:4px; cursor:pointer; text-transform:uppercase; transition:all 0.2s; white-space:nowrap; }
+.toggle-entry:hover { background:var(--gold-dim); }
+
+/* ── ANALYSIS BLOCK ── */
+.analysis-block { padding:8px 14px 12px; border-top:1px solid rgba(255,255,255,0.04); }
+.analysis-label { font-family:'Barlow Condensed',sans-serif; font-size:0.68rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+.analysis-text { font-size:0.8rem; color:#a8b4c8; line-height:1.5; }
+.predicted-score { display:inline-block; background:var(--gold-dim); border:1px solid var(--border); color:var(--gold); font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:2px; padding:1px 8px; border-radius:4px; margin-left:6px; }
+.bet-row { margin-top:8px; padding:7px 10px; background:rgba(0,0,0,0.3); border:1px solid rgba(212,175,55,0.15); border-radius:5px; font-size:0.78rem; color:#bba84a; line-height:1.5; }
+.bet-tag { display:inline-block; background:rgba(212,175,55,0.15); color:var(--gold); font-family:'Barlow Condensed',sans-serif; font-size:0.68rem; font-weight:700; letter-spacing:1px; padding:1px 6px; border-radius:3px; margin-right:4px; text-transform:uppercase; }
+
+/* ── BRACKET ── */
+.bracket-wrapper { overflow-x:auto; padding-bottom:12px; }
+.bracket { display:flex; gap:0; min-width:900px; }
+.round-col { display:flex; flex-direction:column; flex:1; border-right:1px solid var(--border); }
+.round-col:last-child { border-right:none; }
+.round-title { font-family:'Barlow Condensed',sans-serif; font-size:0.7rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--gold); text-align:center; padding:10px 6px; border-bottom:1px solid var(--border); background:var(--bg2); }
+.round-matches { display:flex; flex-direction:column; justify-content:space-around; flex:1; padding:8px 4px; gap:6px; }
+.bracket-match { background:var(--bg2); border:1px solid var(--border); border-radius:6px; padding:6px 8px; cursor:pointer; transition:border-color 0.2s; }
+.bracket-match:hover { border-color:rgba(212,175,55,0.4); }
+.bm-team { display:flex; justify-content:space-between; align-items:center; padding:3px 0; font-family:'Barlow Condensed',sans-serif; font-size:0.8rem; font-weight:600; }
+.bm-team .bm-score { font-family:'Bebas Neue',sans-serif; font-size:1rem; color:var(--gold); }
+.bm-team.winner { color:var(--gold); }
+.bm-sep { border-top:1px solid rgba(255,255,255,0.06); margin:2px 0; }
+.bm-placeholder { color:var(--muted); font-style:italic; font-size:0.72rem; }
+.bm-date { font-family:'Barlow Condensed',sans-serif; font-size:0.63rem; color:var(--muted); letter-spacing:1px; margin-top:3px; }
+
+/* ── TOP SCORERS ── */
+.scorer-table { width:100%; border-collapse:collapse; font-family:'Barlow Condensed',sans-serif; }
+.scorer-table th { padding:7px 10px; font-size:0.68rem; letter-spacing:1.5px; color:var(--muted); font-weight:700; text-align:left; border-bottom:1px solid var(--border); }
+.scorer-table td { padding:8px 10px; font-size:0.88rem; border-bottom:1px solid rgba(255,255,255,0.04); }
+.scorer-table .rank { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; color:var(--muted); width:28px; }
+.scorer-table .goals-count { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; color:var(--gold); }
+
+/* ── MODAL OVERLAY ── */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:200; align-items:center; justify-content:center; padding:16px; }
+.modal-overlay.open { display:flex; }
+.modal-box { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:20px; width:100%; max-width:480px; max-height:85vh; overflow-y:auto; }
+.modal-box h3 { font-family:'Barlow Condensed',sans-serif; font-size:1.1rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:14px; }
+.modal-close { float:right; background:transparent; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer; margin-top:-4px; }
+.modal-close:hover { color:var(--red); }
+
+/* ── SUMMARY BAR ── */
+.summary-bar { position:fixed; bottom:0; left:0; right:0; background:rgba(15,22,32,0.95); backdrop-filter:blur(8px); border-top:1px solid var(--border); padding:10px 20px; display:flex; align-items:center; justify-content:space-around; gap:10px; z-index:90; flex-wrap:wrap; }
+.s-stat { text-align:center; }
+.s-val { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:2px; line-height:1; }
+.s-lbl { font-family:'Barlow Condensed',sans-serif; font-size:0.6rem; letter-spacing:1px; color:var(--muted); text-transform:uppercase; }
+.s-g { color:var(--green); } .s-y { color:var(--yellow); } .s-r { color:var(--red); } .s-b { color:var(--blue); } .s-gold { color:var(--gold); }
+
+/* ── MISC ── */
+.section-title { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:3px; color:var(--gold); margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+.no-data { text-align:center; color:var(--muted); font-family:'Barlow Condensed',sans-serif; font-size:0.85rem; letter-spacing:1px; padding:30px; }
+.disclaimer { font-size:0.68rem; color:var(--muted); text-align:center; padding:10px 16px 4px; line-height:1.5; }
+.badge { display:inline-block; font-family:'Barlow Condensed',sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:1px; padding:1px 6px; border-radius:3px; text-transform:uppercase; }
+.badge-q1 { background:rgba(34,197,94,0.15); color:var(--green); border:1px solid rgba(34,197,94,0.3); }
+.badge-q2 { background:rgba(59,130,246,0.12); color:var(--blue); border:1px solid rgba(59,130,246,0.3); }
+.badge-q3 { background:rgba(212,175,55,0.1); color:var(--gold); border:1px solid rgba(212,175,55,0.2); }
+.pill { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:12px; font-family:'Barlow Condensed',sans-serif; font-size:0.72rem; font-weight:600; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>⚽ MUNDIAL 2026 — TRACKER</h1>
+  <p>Predicciones · Resultados Reales · Tablas · Bracket · Estadísticas</p>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showSection('grupos')">🏟 Grupos</button>
+  <button class="nav-btn" onclick="showSection('bracket')">🏆 Bracket</button>
+  <button class="nav-btn" onclick="showSection('goleadores')">⚽ Goleadores</button>
+  <button class="nav-btn" onclick="showSection('tarjetas')">🟨 Tarjetas</button>
+  <button class="nav-btn" onclick="showSection('esquinas')">🚩 Corners</button>
+</nav>
+
+<!-- ══════════════════ GRUPOS ══════════════════ -->
+<div id="sec-grupos" class="section active">
+  <div class="group-tabs" id="group-tabs"></div>
+  <div id="group-content"></div>
+  <div class="disclaimer">⚠️ Solo entretenimiento. Apuesta responsablemente.</div>
+</div>
+
+<!-- ══════════════════ BRACKET ══════════════════ -->
+<div id="sec-bracket" class="section">
+  <div class="section-title">🏆 BRACKET — FASE ELIMINATORIA</div>
+  <p style="font-size:0.78rem;color:var(--muted);margin-bottom:14px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;">Los clasificados se actualizan automáticamente desde las tablas de grupo. Haz clic en un partido para ingresar resultado.</p>
+  <div class="bracket-wrapper">
+    <div class="bracket" id="bracket-view"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ GOLEADORES ══════════════════ -->
+<div id="sec-goleadores" class="section">
+  <div class="section-title">⚽ GOLEADORES DEL TORNEO</div>
+  <div id="scorers-view"></div>
+</div>
+
+<!-- ══════════════════ TARJETAS ══════════════════ -->
+<div id="sec-tarjetas" class="section">
+  <div class="section-title">🟨 TARJETAS POR EQUIPO</div>
+  <div id="cards-view"></div>
+</div>
+
+<!-- ══════════════════ ESQUINAS ══════════════════ -->
+<div id="sec-esquinas" class="section">
+  <div class="section-title">🚩 TIROS DE ESQUINA POR PARTIDO</div>
+  <div id="corners-view"></div>
+</div>
+
+<!-- ══════════════════ SUMMARY BAR ══════════════════ -->
+<div class="summary-bar">
+  <div class="s-stat"><div class="s-val s-g" id="sb-goals">0</div><div class="s-lbl">Goles</div></div>
+  <div class="s-stat"><div class="s-val s-y" id="sb-yellows">0</div><div class="s-lbl">Amarillas</div></div>
+  <div class="s-stat"><div class="s-val s-r" id="sb-reds">0</div><div class="s-lbl">Rojas</div></div>
+  <div class="s-stat"><div class="s-val s-b" id="sb-corners">0</div><div class="s-lbl">Corners</div></div>
+  <div class="s-stat"><div class="s-val s-gold" id="sb-played">0</div><div class="s-lbl">Jugados</div></div>
+</div>
+
+<!-- ══════════════════ BRACKET MODAL ══════════════════ -->
+<div class="modal-overlay" id="bracket-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3 id="bm-title">Resultado</h3>
+    <div id="bm-body"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// DATOS BASE
+// ══════════════════════════════════════════════════
+const GROUPS_DATA = [
+  { id:"A", teams:["🇲🇽 México","🇿🇦 Sudáfrica","🇰🇷 Corea del Sur","🇨🇿 Chequia"],
+    matches:[
+      { date:"11 Jun", home:0, away:1, predScore:"2-0", analysis:"México en el Azteca con apoyo masivo. Sudáfrica es debut, sin experiencia mundialista reciente. Ventaja local enorme.", scorers:"Lozano 23', Raúl Jiménez 71'", corners:"México 6, Sudáfrica 3", tip:{type:"Gana México",risk:"low",odds:"~1.60",note:"Ventaja local histórica. Considera también México +1.5 goles."} },
+      { date:"11 Jun", home:2, away:3, predScore:"1-1", analysis:"Corea tiene calidad individual con Son, pero inconsistencia colectiva. Chequia sólida en UEFA Nations League. Partido muy parejo.", scorers:"Son 44', Schick 68'", corners:"Corea 5, Chequia 4", tip:{type:"BTTS (Ambos anotan)",risk:"low",odds:"~1.75",note:"Ambas tienen ataque competente. BTTS Sí es la apuesta más inteligente."} },
+      { date:"18 Jun", home:3, away:1, predScore:"2-1", analysis:"Chequia tiene más experiencia europea. Sudáfrica puede sorprender con ritmo pero no al nivel UEFA.", scorers:"Schick 31' 55', Bafana 78'", corners:"Chequia 5, Sudáfrica 4", tip:{type:"Gana Chequia",risk:"low",odds:"~1.70",note:"Chequia favorita clara. Alternativa: Chequia -1 AH."} },
+      { date:"18 Jun", home:0, away:2, predScore:"2-1", analysis:"México en Guadalajara. Corea del Sur el rival más peligroso. Partido intenso pero México debería ganar.", scorers:"Lozano 12', Son 50', Raúl 89'", corners:"México 6, Corea 5", tip:{type:"1X Doble Oportunidad",risk:"low",odds:"~1.45",note:"México como local en doble oportunidad es de bajo riesgo."} },
+      { date:"24 Jun", home:3, away:0, predScore:"1-1", analysis:"Si México ya clasificó puede rotar. Chequia necesita puntos. Empate táctico probable.", scorers:"Schick 40', Lozano 77'", corners:"Chequia 5, México 5", tip:{type:"Menos de 2.5 goles",risk:"med",odds:"~1.90",note:"Partido final de grupo con cautela táctica."} },
+      { date:"24 Jun", home:1, away:2, predScore:"0-2", analysis:"Corea necesitará ganar para asegurar clasificación. Sudáfrica ya sin opciones. Con Son motivado debería imponerse.", scorers:"Son 33' 61'", corners:"Corea 7, Sudáfrica 2", tip:{type:"Gana Corea del Sur",risk:"low",odds:"~1.65",note:"Corea superior técnicamente. Apuesta razonable."} }
+    ]
+  },
+  { id:"B", teams:["🇨🇦 Canadá","🇨🇭 Suiza","🇶🇦 Qatar","🇧🇦 Bosnia"],
+    matches:[
+      { date:"12 Jun", home:0, away:3, predScore:"2-0", analysis:"Canadá en casa con Davies y Buchanan. Bosnia es interesante pero no al nivel de CONCACAF anfitrión.", scorers:"Davies 18', Buchanan 65'", corners:"Canadá 7, Bosnia 3", tip:{type:"Gana Canadá",risk:"low",odds:"~1.55",note:"Local anfitrión con motivación extra."} },
+      { date:"13 Jun", home:2, away:1, predScore:"0-2", analysis:"Qatar repite su fracaso de 2022. Suiza es uno de los equipos más sólidos de Europa.", scorers:"Embolo 28', Aebischer 71'", corners:"Suiza 8, Qatar 2", tip:{type:"Gana Suiza",risk:"low",odds:"~1.40",note:"Suiza clarísima favorita. Ideal para acumular."} },
+      { date:"18 Jun", home:1, away:3, predScore:"2-1", analysis:"Suiza sólida con el sistema de Yakin. Bosnia peligrosa en contraataque con Džeko.", scorers:"Embolo 22', Džeko 55' pen, Shaqiri 80'", corners:"Suiza 6, Bosnia 4", tip:{type:"Gana Suiza",risk:"low",odds:"~1.50",note:"Suiza favorita. BTTS también atractivo a ~1.70."} },
+      { date:"18 Jun", home:0, away:2, predScore:"3-0", analysis:"Qatar es el más débil del grupo. Canadá con ventaja local aplastante.", scorers:"David 10' 44' 72'", corners:"Canadá 9, Qatar 2", tip:{type:"Canadá -1.5 AH",risk:"low",odds:"~1.65",note:"El partido más desequilibrado del grupo."} },
+      { date:"24 Jun", home:1, away:0, predScore:"1-1", analysis:"Ambos ya clasificados probablemente. Partido sin muchos riesgos. Rotaciones esperadas.", scorers:"Aebischer 50', Johnston 85'", corners:"Suiza 5, Canadá 5", tip:{type:"Empate (X)",risk:"med",odds:"~3.20",note:"Si ambos ya clasificaron, el empate conveniente es plausible."} },
+      { date:"24 Jun", home:3, away:2, predScore:"2-0", analysis:"Bosnia necesitará ganar para optar al tercer lugar. Qatar ya eliminado.", scorers:"Džeko 35', Prevljak 78'", corners:"Bosnia 6, Qatar 3", tip:{type:"Gana Bosnia",risk:"low",odds:"~1.70",note:"Bosnia motivada vs Qatar sin opciones."} }
+    ]
+  },
+  { id:"C", teams:["🇧🇷 Brasil","🇲🇦 Marruecos","🇭🇹 Haití","🏴󠁧󠁢󠁳󠁣󠁴󠁿 Escocia"],
+    matches:[
+      { date:"13 Jun", home:2, away:3, predScore:"0-2", analysis:"Haití es el debut histórico más débil del grupo. Escocia con Robertson y McGinn impondrá clase.", scorers:"McGinn 28', Adams 62'", corners:"Escocia 8, Haití 2", tip:{type:"Gana Escocia",risk:"low",odds:"~1.45",note:"Escocia muy superior. Considera Escocia -1.5 AH."} },
+      { date:"13 Jun", home:0, away:1, predScore:"2-1", analysis:"Brasil vs Marruecos, el partido más atractivo del grupo. Marruecos demostró en Qatar 2022 que compite con cualquiera.", scorers:"Vinicius 34', En-Nesyri 67', Rodrygo 88'", corners:"Brasil 7, Marruecos 5", tip:{type:"BTTS",risk:"low",odds:"~1.80",note:"Marruecos anotó en semifinales de Qatar. BTTS muy atractivo."} },
+      { date:"19 Jun", home:0, away:2, predScore:"5-0", analysis:"La más clara del grupo. Brasil contra el debutante más débil. Goleada esperada.", scorers:"Vinicius 5' 30', Rodrygo 42', Neymar 60' 77'", corners:"Brasil 10, Haití 1", tip:{type:"Brasil +3.5 goles totales",risk:"low",odds:"~1.60",note:"Over 3.5 goles muy probable. Considerar también Brasil gana a 0."} },
+      { date:"19 Jun", home:3, away:1, predScore:"0-1", analysis:"Marruecos con su bloque defensivo puede encontrar el gol. Partido muy táctico y cerrado.", scorers:"En-Nesyri 55'", corners:"Escocia 6, Marruecos 4", tip:{type:"Menos de 2.5 goles",risk:"low",odds:"~1.75",note:"Marruecos de los equipos con menos goles concedidos. Under 2.5 sólido."} },
+      { date:"24 Jun", home:3, away:0, predScore:"0-2", analysis:"Incluso si Brasil ya clasificó, la diferencia es enorme. Escocia sin opciones de ganarle a Brasil.", scorers:"Vinicius 22', Endrick 74'", corners:"Brasil 8, Escocia 3", tip:{type:"Gana Brasil",risk:"low",odds:"~1.40",note:"Favorable para combinar en parlay."} },
+      { date:"24 Jun", home:1, away:2, predScore:"3-0", analysis:"Marruecos no tendrá piedad ante Haití. Con clasificación en mente, gestionará bien.", scorers:"Ziyech 15' 55', En-Nesyri 80'", corners:"Marruecos 8, Haití 2", tip:{type:"Gana Marruecos",risk:"low",odds:"~1.25",note:"Casi segura. Úsala en combinada."} }
+    ]
+  },
+  { id:"D", teams:["🇺🇸 EE.UU.","🇵🇾 Paraguay","🇦🇺 Australia","🇹🇷 Turquía"],
+    matches:[
+      { date:"12 Jun", home:0, away:1, predScore:"2-0", analysis:"EE.UU. anfitrión con Pulisic, Weah y McKennie. Paraguay tiene calidad sudamericana pero el factor local es decisivo.", scorers:"Pulisic 27', Weah 73'", corners:"EE.UU. 6, Paraguay 4", tip:{type:"Gana EE.UU.",risk:"low",odds:"~1.55",note:"Local con motivación máxima."} },
+      { date:"14 Jun", home:2, away:3, predScore:"1-2", analysis:"Turquía mejoró con Güler y Yildiz. Australia depende de Duke e Irvine. Turquía tiene mediocampo más completo.", scorers:"Yildiz 33' 70', Duke 55'", corners:"Turquía 6, Australia 5", tip:{type:"X2 Empate o Turquía",risk:"med",odds:"~1.55",note:"Turquía ligeramente mejor. X2 cubre ambos escenarios."} },
+      { date:"19 Jun", home:3, away:1, predScore:"1-1", analysis:"Turquía y Paraguay de nivel similar. Paraguay físico y directo, Turquía técnico. Empate muy factible.", scorers:"Calvo 40', Güler 65'", corners:"Turquía 5, Paraguay 5", tip:{type:"BTTS",risk:"low",odds:"~1.80",note:"Ambas selecciones tienen riqueza ofensiva."} },
+      { date:"19 Jun", home:0, away:2, predScore:"2-1", analysis:"EE.UU. debe seguir ganando para asegurar liderato. Australia puede hacer daño por banda.", scorers:"Pulisic 15', Irvine 50', McKennie 88'", corners:"EE.UU. 7, Australia 4", tip:{type:"Gana EE.UU.",risk:"low",odds:"~1.50",note:"Apuesta sólida con local anfitrión."} },
+      { date:"25 Jun", home:3, away:0, predScore:"1-1", analysis:"Partido clave si clasificaciones están ajustadas. Turquía querrá ganar el grupo.", scorers:"Güler 28', Pulisic 79' pen", corners:"EE.UU. 6, Turquía 5", tip:{type:"X2",risk:"med",odds:"~1.60",note:"EE.UU. raramente gana fuera de condiciones ideales."} },
+      { date:"25 Jun", home:1, away:2, predScore:"2-1", analysis:"Paraguay con más calidad individual. Australia el todo por el todo. Partido abierto con goles.", scorers:"Almirón 22', Sanabria 60', Irvine 70'", corners:"Paraguay 5, Australia 6", tip:{type:"BTTS",risk:"low",odds:"~1.75",note:"Partido sin nada que perder para Australia. Se esperan goles."} }
+    ]
+  },
+  { id:"E", teams:["🇩🇪 Alemania","🇨🇼 Curazao","🇨🇮 Costa de Marfil","🇪🇨 Ecuador"],
+    matches:[
+      { date:"14 Jun", home:0, away:3, predScore:"3-1", analysis:"Alemania resurgida tras EURO 2024. Musiala, Wirtz y Havertz vs Ecuador. Encuentro atractivo.", scorers:"Musiala 18', Wirtz 40', Valencia 55', Havertz 80'", corners:"Alemania 8, Ecuador 4", tip:{type:"Gana Alemania",risk:"low",odds:"~1.45",note:"Alemania claramente superior. Over 2.5 goles también atractivo."} },
+      { date:"14 Jun", home:2, away:1, predScore:"3-0", analysis:"Costa de Marfil con Zaha y Kessié es demasiado para Curazao, el más pequeño del grupo.", scorers:"Zaha 20' 55', Kessié 75'", corners:"Costa de Marfil 9, Curazao 2", tip:{type:"Gana Costa de Marfil",risk:"low",odds:"~1.30",note:"Alta probabilidad. Combinar en parlay."} },
+      { date:"19 Jun", home:0, away:2, predScore:"2-1", analysis:"Costa de Marfil puede plantear problemas con velocidad. Pero calidad alemana en posesión decidirá.", scorers:"Musiala 30', Zaha 55', Wirtz 83'", corners:"Alemania 7, Costa de Marfil 5", tip:{type:"Gana Alemania",risk:"low",odds:"~1.50",note:"Alemania favorita. BTTS también interesante."} },
+      { date:"20 Jun", home:3, away:1, predScore:"3-0", analysis:"Ecuador muy superior a Curazao. Valencia y Caicedo maquinaria poderosa.", scorers:"Valencia 10' 35', Estupinán 60'", corners:"Ecuador 9, Curazao 2", tip:{type:"Ecuador -1.5 AH",risk:"low",odds:"~1.65",note:"Ecuador debería ganar con comodidad."} },
+      { date:"26 Jun", home:0, away:1, predScore:"5-0", analysis:"La goleada más esperada. Alemania con todos sus talentos vs el más débil.", scorers:"Havertz 8', Musiala 20' 55', Wirtz 70', Füllkrug 88'", corners:"Alemania 12, Curazao 1", tip:{type:"Alemania +3.5 goles",risk:"low",odds:"~1.75",note:"Curazao posiblemente el más débil del torneo. Over 3.5 casi garantizado."} },
+      { date:"26 Jun", home:2, away:3, predScore:"1-1", analysis:"La disputa por el segundo puesto. Ambos equipos fuertes físicamente. Partido igualado.", scorers:"Zaha 38', Valencia 77'", corners:"Costa de Marfil 6, Ecuador 5", tip:{type:"BTTS",risk:"low",odds:"~1.80",note:"Partido de máximo esfuerzo. BTTS refleja bien el equilibrio."} }
+    ]
+  },
+  { id:"F", teams:["🇳🇱 Países Bajos","🇯🇵 Japón","🇹🇳 Túnez","🇸🇪 Suecia"],
+    matches:[
+      { date:"15 Jun", home:0, away:3, predScore:"2-0", analysis:"Países Bajos con Van Dijk, Gakpo y De Jong. Los holandeses en gran nivel querrán liderar.", scorers:"Gakpo 25', Depay 67'", corners:"Países Bajos 8, Suecia 3", tip:{type:"Gana Países Bajos",risk:"low",odds:"~1.45",note:"Claramente superior. Combinar con apuesta segura."} },
+      { date:"15 Jun", home:1, away:2, predScore:"2-1", analysis:"Japón demostró en Qatar ser un gigante en evolución. Túnez sólido pero Japón más creativo.", scorers:"Mitoma 30', Doan 60', Khazri 75'", corners:"Japón 7, Túnez 4", tip:{type:"Gana Japón",risk:"low",odds:"~1.60",note:"Japón favorita moderada. BTTS también atractivo."} },
+      { date:"20 Jun", home:0, away:1, predScore:"2-1", analysis:"El mejor partido del grupo. Japón peligroso en contraataques. Países Bajos tiene ventaja técnica.", scorers:"Gakpo 20', Mitoma 55', Dumfries 88'", corners:"Países Bajos 8, Japón 5", tip:{type:"BTTS",risk:"med",odds:"~1.85",note:"Japón anotó ante Alemania y España. BTTS muy atractivo."} },
+      { date:"20 Jun", home:3, away:2, predScore:"2-1", analysis:"Suecia con Isak necesita los puntos. Túnez sólido defensivamente pero Suecia con más profundidad.", scorers:"Isak 28' 70', Khazri 55'", corners:"Suecia 7, Túnez 4", tip:{type:"Gana Suecia",risk:"low",odds:"~1.70",note:"Suecia motivada en partido vital. Isak el diferencial."} },
+      { date:"25 Jun", home:0, away:2, predScore:"2-0", analysis:"Países Bajos ya clasificado pero querrá liderar. Túnez no llega al nivel holandés.", scorers:"Depay 35', Gakpo 72'", corners:"Países Bajos 8, Túnez 3", tip:{type:"Gana Países Bajos",risk:"low",odds:"~1.40",note:"Apuesta casi segura. Ideal para parlay."} },
+      { date:"25 Jun", home:1, away:3, predScore:"1-1", analysis:"Ambos necesitarán puntos. Partido de mucha intensidad. Japón con ventaja si viene ganando.", scorers:"Mitoma 40', Isak 75'", corners:"Japón 6, Suecia 5", tip:{type:"BTTS",risk:"low",odds:"~1.80",note:"Partido abierto con necesidades de puntuar. Goles por ambos lados."} }
+    ]
+  },
+  { id:"G", teams:["🇧🇪 Bélgica","🇪🇬 Egipto","🇮🇷 Irán","🇳🇿 Nueva Zelanda"],
+    matches:[
+      { date:"15 Jun", home:0, away:3, predScore:"4-0", analysis:"Bélgica con nueva generación (Doku, Trossard, Lukaku) arranca con goleada ante el más débil.", scorers:"Lukaku 12' 45', Doku 60', Trossard 80'", corners:"Bélgica 11, Nueva Zelanda 2", tip:{type:"Bélgica -2.5 AH",risk:"low",odds:"~1.80",note:"Goleada esperada. Handicap -2.5 con buena cuota."} },
+      { date:"16 Jun", home:1, away:2, predScore:"2-1", analysis:"Egipto con Salah es favorito. Irán organizado pero le falta calidad individual.", scorers:"Salah 22' pen, Taremi 55', Trezeguet 88'", corners:"Egipto 7, Irán 4", tip:{type:"Gana Egipto",risk:"low",odds:"~1.65",note:"Con Salah motivado, Egipto debería ganar."} },
+      { date:"20 Jun", home:0, away:2, predScore:"3-0", analysis:"Bélgica superior en todos los aspectos técnicos. Irán puede ser compacto pero sin gol.", scorers:"Trossard 18', Lukaku 44', Doku 75'", corners:"Bélgica 9, Irán 3", tip:{type:"Gana Bélgica",risk:"low",odds:"~1.40",note:"Muy segura. Ideal para acumulador."} },
+      { date:"21 Jun", home:1, away:3, predScore:"3-0", analysis:"Egipto debe liquidar a Nueva Zelanda para asegurar clasificación. Con Salah en forma, amplia.", scorers:"Salah 15' 44', Trezeguet 70'", corners:"Egipto 9, Nueva Zelanda 2", tip:{type:"Gana Egipto",risk:"low",odds:"~1.35",note:"Casi segura. Combinar en parlay."} },
+      { date:"25 Jun", home:0, away:1, predScore:"2-1", analysis:"Salah vs Doku/Trossard. Bélgica tiene más profundidad pero Egipto puede sorprender.", scorers:"Lukaku 25', Salah 55' pen, Doku 85'", corners:"Bélgica 8, Egipto 5", tip:{type:"BTTS",risk:"low",odds:"~1.90",note:"Partido de alta calidad. Goles garantizados de ambos lados."} },
+      { date:"25 Jun", home:2, away:3, predScore:"2-0", analysis:"Irán necesita ganar para optar al tercer lugar. Nueva Zelanda el eslabón débil.", scorers:"Taremi 30' 65'", corners:"Irán 7, Nueva Zelanda 3", tip:{type:"Gana Irán",risk:"low",odds:"~1.55",note:"Irán superior. Con motivación de clasificar como tercer mejor."} }
+    ]
+  },
+  { id:"H", teams:["🇪🇸 España","🇨🇻 Cabo Verde","🇸🇦 Arabia Saudita","🇺🇾 Uruguay"],
+    matches:[
+      { date:"16 Jun", home:0, away:3, predScore:"2-1", analysis:"Yamal, Nico Williams y Pedri vs Núñez y Valverde. El duelo estelar del grupo. Partido de alto nivel.", scorers:"Yamal 30', Pedri 60', Núñez 75'", corners:"España 9, Uruguay 5", tip:{type:"BTTS",risk:"low",odds:"~1.85",note:"Uruguay siempre rinde en Mundiales. BTTS la mejor apuesta."} },
+      { date:"16 Jun", home:2, away:1, predScore:"2-1", analysis:"Arabia Saudita recuperada. Cabo Verde debutante, sorpresa de CAF pero nivel asiático superior.", scorers:"Al Dawsari 20' 60', Lopes 75'", corners:"Arabia Saudita 7, Cabo Verde 4", tip:{type:"Gana Arabia Saudita",risk:"low",odds:"~1.60",note:"Arabia Saudita debería imponerse."} },
+      { date:"21 Jun", home:0, away:2, predScore:"3-0", analysis:"España con juego posesional que asfixia a rivales menos técnicos. Arabia Saudita difícilmente compite.", scorers:"Yamal 15', Nico Williams 40', Morata 75'", corners:"España 10, Arabia Saudita 3", tip:{type:"Gana España",risk:"low",odds:"~1.30",note:"Casi segura. España -1.5 AH también atractivo."} },
+      { date:"21 Jun", home:3, away:1, predScore:"3-0", analysis:"Uruguay no puede permitirse fallar. Con toda su calidad debería golear a Cabo Verde.", scorers:"Núñez 10' 44', Valverde 70'", corners:"Uruguay 8, Cabo Verde 3", tip:{type:"Gana Uruguay",risk:"low",odds:"~1.35",note:"Uruguay muy superior. Más de 2.5 goles también."} },
+      { date:"25 Jun", home:0, away:1, predScore:"4-0", analysis:"España contra el más débil. Yamal y Nico Williams querrán brillar. Goleada contundente.", scorers:"Yamal 12' 50', Nico Williams 30', Morata 80'", corners:"España 12, Cabo Verde 2", tip:{type:"España +3.5 goles",risk:"low",odds:"~1.70",note:"España en pico ofensivo. Over 3.5 o incluso Over 4.5."} },
+      { date:"25 Jun", home:3, away:2, predScore:"2-0", analysis:"Uruguay debería superar a Arabia Saudita. Núñez y Valverde controlando el partido.", scorers:"Núñez 28', Forlan jr 70'", corners:"Uruguay 7, Arabia Saudita 4", tip:{type:"Gana Uruguay",risk:"low",odds:"~1.50",note:"Uruguay tiene demasiada calidad. Bajo riesgo."} }
+    ]
+  },
+  { id:"I", teams:["🇫🇷 Francia","🇸🇳 Senegal","🇳🇴 Noruega","🇮🇶 Irak"],
+    matches:[
+      { date:"16 Jun", home:0, away:3, predScore:"4-0", analysis:"Francia con Mbappé, Camavinga y Tchouaméni vs Irak. Diferencia de nivel abismal. Goleada.", scorers:"Mbappé 10' 35' 55', Griezmann 80'", corners:"Francia 10, Irak 2", tip:{type:"Francia +3.5 goles",risk:"low",odds:"~1.70",note:"Francia marcó 16 en Qatar. Contra Irak, over 3.5 muy probable."} },
+      { date:"17 Jun", home:1, away:2, predScore:"1-2", analysis:"Noruega con Haaland el gran candidato a la sorpresa. Senegal tiene Mané y Sarr pero Haaland marca la diferencia.", scorers:"Haaland 20' 65', Mané 44'", corners:"Senegal 6, Noruega 5", tip:{type:"Gana Noruega",risk:"med",odds:"~2.00",note:"Partido reñido pero Haaland decide. Riesgo moderado con buena cuota."} },
+      { date:"21 Jun", home:0, away:1, predScore:"2-1", analysis:"Senegal fue semifinalista africano. Francia tiene más clase individual pero Senegal puede complicar.", scorers:"Mbappé 22', Mané 60', Griezmann 88'", corners:"Francia 8, Senegal 5", tip:{type:"BTTS",risk:"low",odds:"~1.90",note:"Senegal tiene ataque poderoso. BTTS es inteligente."} },
+      { date:"22 Jun", home:2, away:3, predScore:"4-0", analysis:"Haaland contra Irak. No necesita más análisis. Goleada masiva.", scorers:"Haaland 5' 25' 55' 75'", corners:"Noruega 10, Irak 2", tip:{type:"Haaland +1.5 goles",risk:"low",odds:"~1.85",note:"Haaland en competencias oficiales es impresionante."} },
+      { date:"26 Jun", home:0, away:2, predScore:"2-1", analysis:"El partido del grupo. Mbappé vs Haaland. Francia más profundidad colectiva.", scorers:"Mbappé 30', Haaland 50', Camavinga 87'", corners:"Francia 7, Noruega 6", tip:{type:"Más de 2.5 goles",risk:"low",odds:"~1.70",note:"Mbappé vs Haaland garantiza espectáculo. Over 2.5 casi una certeza."} },
+      { date:"26 Jun", home:1, away:3, predScore:"3-0", analysis:"Senegal debe ganar para asegurar clasificación. Irak no puede frenar el ataque senegalés.", scorers:"Mané 15' 55', Sarr 78'", corners:"Senegal 8, Irak 2", tip:{type:"Gana Senegal",risk:"low",odds:"~1.40",note:"Senegal muy superior. Considera Senegal -1.5 AH."} }
+    ]
+  },
+  { id:"J", teams:["🇦🇷 Argentina","🇩🇿 Argelia","🇦🇹 Austria","🇯🇴 Jordania"],
+    matches:[
+      { date:"17 Jun", home:0, away:3, predScore:"4-0", analysis:"Argentina campeona del mundo contra Jordania. Messi, De Paul, Álvarez. Goleada para calentar.", scorers:"Messi 8' 40', Álvarez 55', Di María 78'", corners:"Argentina 10, Jordania 2", tip:{type:"Argentina -2.5 AH",risk:"low",odds:"~1.75",note:"Argentina no tendrá piedad. Handicap -2.5 atractivo."} },
+      { date:"17 Jun", home:1, away:2, predScore:"1-1", analysis:"Partido muy parejo entre la sorpresa africana y el Austria resurgente. Equilibrio total.", scorers:"Bennacer 35', Sabitzer 70'", corners:"Argelia 5, Austria 6", tip:{type:"BTTS",risk:"low",odds:"~1.85",note:"Ambos anotan regularmente. Mucho ataque por los dos lados."} },
+      { date:"22 Jun", home:0, away:1, predScore:"2-0", analysis:"Argentina vs el segundo más fuerte. Argelia puede presionar pero Argentina tiene demasiada calidad.", scorers:"Álvarez 22', Messi 70' pen", corners:"Argentina 8, Argelia 4", tip:{type:"Gana Argentina",risk:"low",odds:"~1.45",note:"Argentina campeona mundial. Apuesta segura."} },
+      { date:"22 Jun", home:2, away:3, predScore:"3-0", analysis:"Austria con Sabitzer y Laimer debería controlar fácilmente. Jordania sin recursos.", scorers:"Sabitzer 18' 50', Laimer 75'", corners:"Austria 9, Jordania 2", tip:{type:"Gana Austria",risk:"low",odds:"~1.45",note:"Austria muy superior. Apuesta segura para parlay."} },
+      { date:"26 Jun", home:0, away:2, predScore:"2-0", analysis:"Argentina puede rotar pero aun así es superior. Austria intentará la sorpresa.", scorers:"Álvarez 30', MacAllister 77'", corners:"Argentina 8, Austria 4", tip:{type:"Gana Argentina",risk:"low",odds:"~1.40",note:"Argentina ganará el grupo incluso rotando."} },
+      { date:"26 Jun", home:1, away:3, predScore:"2-0", analysis:"Argelia con todo para asegurar el segundo lugar. Jordania eliminada prácticamente.", scorers:"Mahrez 28', Bennacer 65'", corners:"Argelia 7, Jordania 3", tip:{type:"Gana Argelia",risk:"low",odds:"~1.50",note:"Argelia motivada vs Jordania sin opciones."} }
+    ]
+  },
+  { id:"K", teams:["🇵🇹 Portugal","🇨🇴 Colombia","🇺🇿 Uzbekistán","🇨🇩 R.D. Congo"],
+    matches:[
+      { date:"17 Jun", home:0, away:2, predScore:"4-0", analysis:"Portugal con Félix, Leão y Bruno Fernandes. Uzbekistán el más débil del grupo. Goleada.", scorers:"Félix 12' 45', Leão 60', Bruno 80'", corners:"Portugal 10, Uzbekistán 2", tip:{type:"Portugal +3.5 goles",risk:"low",odds:"~1.75",note:"Portugal arsenal ofensivo bestial. Over 3.5 sólido."} },
+      { date:"18 Jun", home:1, away:3, predScore:"2-1", analysis:"Colombia con James y Luis Díaz vs el sorprendente Congo. Colombia debería ganar.", scorers:"Díaz 22', Mbokani 55', James 80' pen", corners:"Colombia 7, Congo 4", tip:{type:"Gana Colombia",risk:"low",odds:"~1.55",note:"Colombia claramente superior. James y Díaz hacen la diferencia."} },
+      { date:"22 Jun", home:0, away:1, predScore:"2-1", analysis:"James Rodríguez vs Bruno Fernandes. Colombia puede plantear cara pero Portugal impenetrable.", scorers:"Bruno 25', James 60', Leão 85'", corners:"Portugal 8, Colombia 6", tip:{type:"BTTS",risk:"low",odds:"~1.85",note:"Ambas selecciones con ataques de altísimo nivel."} },
+      { date:"23 Jun", home:2, away:3, predScore:"1-1", analysis:"Partido entre los dos más débiles. Congo físico, Uzbekistán técnico. Empate probable.", scorers:"Mbokani 40', Shomurodov 70'", corners:"Uzbekistán 5, Congo 5", tip:{type:"Empate (X)",risk:"med",odds:"~3.00",note:"Cuota alta justificada. Partido entre iguales."} },
+      { date:"27 Jun", home:0, away:3, predScore:"3-0", analysis:"Portugal goleará al Congo para cerrar con liderato.", scorers:"Félix 15', Leão 50', Bruno 78'", corners:"Portugal 10, Congo 3", tip:{type:"Gana Portugal",risk:"low",odds:"~1.30",note:"Casi garantizada. Agregar a parlay."} },
+      { date:"27 Jun", home:1, away:2, predScore:"3-0", analysis:"Colombia con Díaz y James asegura los 3 puntos ante Uzbekistán.", scorers:"Díaz 12' 55', Falcao 80'", corners:"Colombia 9, Uzbekistán 3", tip:{type:"Gana Colombia",risk:"low",odds:"~1.45",note:"Colombia muy superior."} }
+    ]
+  },
+  { id:"L", teams:["🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra","🇭🇷 Croacia","🇬🇭 Ghana","🇵🇦 Panamá"],
+    matches:[
+      { date:"18 Jun", home:0, away:3, predScore:"4-0", analysis:"Inglaterra con Bellingham, Saka y Kane contra Panamá. Goleada esperada para arrancar.", scorers:"Kane 10' 40', Bellingham 60', Saka 80'", corners:"Inglaterra 11, Panamá 2", tip:{type:"Inglaterra -2.5 AH",risk:"low",odds:"~1.75",note:"Panamá es el más débil. Handicap amplio justificado."} },
+      { date:"19 Jun", home:1, away:2, predScore:"2-1", analysis:"Croacia con Modrić en su último Mundial. Ghana tiene talento con Kudus y Semenyo.", scorers:"Modrić 22', Kudus 55', Kramarić 80'", corners:"Croacia 7, Ghana 5", tip:{type:"Gana Croacia",risk:"low",odds:"~1.60",note:"Croacia motivada con Modrić. Ghana puede marcar."} },
+      { date:"23 Jun", home:0, away:2, predScore:"3-1", analysis:"Inglaterra debería ganar con comodidad pero Ghana con Kudus puede ser peligroso.", scorers:"Kane 15' 70', Kudus 44', Bellingham 85'", corners:"Inglaterra 9, Ghana 5", tip:{type:"Gana Ing y BTTS",risk:"med",odds:"~2.20",note:"Ghana marca siempre pero Inglaterra ganará. Cuota decente."} },
+      { date:"23 Jun", home:1, away:3, predScore:"3-0", analysis:"Croacia necesita demostrar que puede liderar. Panamá inferior. Victoria cómoda.", scorers:"Kramarić 18' 55', Modrić 72'", corners:"Croacia 8, Panamá 2", tip:{type:"Gana Croacia",risk:"low",odds:"~1.50",note:"Croacia con toda su calidad. Apuesta sólida."} },
+      { date:"27 Jun", home:0, away:1, predScore:"2-1", analysis:"Revanchas de EURO 2021. Modrić puede empatar pero Inglaterra tiene más fuerza individual.", scorers:"Bellingham 28', Modrić 60' pen, Saka 82'", corners:"Inglaterra 8, Croacia 6", tip:{type:"BTTS",risk:"low",odds:"~1.80",note:"Partido de máxima exigencia. Croacia siempre marca."} },
+      { date:"27 Jun", home:2, away:3, predScore:"2-0", analysis:"Ghana necesita ganar para asegurar tercer lugar. Panamá sin opciones.", scorers:"Kudus 25' 70'", corners:"Ghana 7, Panamá 3", tip:{type:"Gana Ghana",risk:"low",odds:"~1.55",note:"Ghana muy superior a Panamá."} }
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════
+const ST_KEY = 'wc2026_v4';
+let state = JSON.parse(localStorage.getItem(ST_KEY) || 'null') || { results:{}, bracketResults:{} };
+function save() { localStorage.setItem(ST_KEY, JSON.stringify(state)); }
+
+let activeGroupId = 'A';
+let openEntry = null;
+
+// ══════════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════════
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  event.target.classList.add('active');
+  if (id === 'bracket') renderBracket();
+  if (id === 'goleadores') renderScorers();
+  if (id === 'tarjetas') renderCards();
+  if (id === 'esquinas') renderCorners();
+  updateSummaryBar();
+}
+
+// ══════════════════════════════════════════════════
+// GROUP STANDINGS
+// ══════════════════════════════════════════════════
+function getStandings(group) {
+  const teams = group.teams.map((name, i) => ({ name, i, pts:0, pj:0, pg:0, pe:0, pp:0, gf:0, gc:0, dg:0, form:[] }));
+  group.matches.forEach((m, idx) => {
+    const r = state.results[group.id + '_' + idx];
+    if (!r || r.hg === '' || r.ag === '') return;
+    const hg = parseInt(r.hg), ag = parseInt(r.ag);
+    if (isNaN(hg) || isNaN(ag)) return;
+    const ht = teams[m.home], at = teams[m.away];
+    ht.pj++; at.pj++; ht.gf += hg; ht.gc += ag; at.gf += ag; at.gc += hg;
+    ht.dg = ht.gf - ht.gc; at.dg = at.gf - at.gc;
+    if (hg > ag) { ht.pts += 3; ht.pg++; at.pp++; ht.form.push('W'); at.form.push('L'); }
+    else if (hg === ag) { ht.pts++; at.pts++; ht.pe++; at.pe++; ht.form.push('D'); at.form.push('D'); }
+    else { at.pts += 3; at.pg++; ht.pp++; at.form.push('W'); ht.form.push('L'); }
+  });
+  return teams.sort((a,b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
+}
+
+function renderGroupSection() {
+  // Tabs
+  const tabs = document.getElementById('group-tabs');
+  tabs.innerHTML = GROUPS_DATA.map(g =>
+    `<button class="gtab ${g.id === activeGroupId ? 'active':''}" onclick="switchGroup('${g.id}')">${g.id}</button>`
+  ).join('');
+  renderGroupContent();
+}
+
+function switchGroup(id) {
+  activeGroupId = id;
+  openEntry = null;
+  renderGroupSection();
+}
+
+function renderGroupContent() {
+  const group = GROUPS_DATA.find(g => g.id === activeGroupId);
+  const standings = getStandings(group);
+  const content = document.getElementById('group-content');
+
+  let html = `<div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;color:var(--gold);margin-bottom:10px;">GRUPO ${group.id}</div>`;
+
+  // Standing table
+  html += `<table class="stand-table"><thead><tr>
+    <th>Equipo</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DIF</th><th>PTS</th><th>Forma</th>
+  </tr></thead><tbody>`;
+  standings.forEach((t, pos) => {
+    const cls = pos === 0 ? 'qualified-1' : pos === 1 ? 'qualified-2' : pos === 2 ? 'qualified-3' : '';
+    const badge = pos === 0 ? '<span class="badge badge-q1">1°</span>' : pos === 1 ? '<span class="badge badge-q2">2°</span>' : pos === 2 ? '<span class="badge badge-q3">3°?</span>' : '';
+    const formHtml = t.form.slice(-3).map(f => `<span class="form-dot ${f}"></span>`).join('');
+    html += `<tr class="${cls}">
+      <td>${badge} ${t.name}</td>
+      <td>${t.pj}</td><td>${t.pg}</td><td>${t.pe}</td><td>${t.pp}</td>
+      <td>${t.gf}</td><td>${t.gc}</td><td>${t.dg > 0 ? '+' : ''}${t.dg}</td>
+      <td class="pts-cell">${t.pts}</td>
+      <td>${formHtml}</td>
+    </tr>`;
+  });
+  html += `</tbody></table>`;
+
+  // Matches
+  html += `<div style="font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">Partidos</div>`;
+  group.matches.forEach((m, idx) => {
+    const key = group.id + '_' + idx;
+    const r = state.results[key] || {};
+    const played = r.hg !== undefined && r.hg !== '' && r.ag !== undefined && r.ag !== '';
+    const isOpen = openEntry === key;
+    const hName = group.teams[m.home];
+    const aName = group.teams[m.away];
+    const riskColor = m.tip.risk === 'low' ? 'var(--green)' : 'var(--yellow)';
+    const riskLabel = m.tip.risk === 'low' ? '🟢 Bajo riesgo' : '🟡 Riesgo medio';
+
+    html += `<div class="match-card">
+      <div class="match-top">
+        <div class="match-date-tag">${m.date}</div>
+        <div class="teams-center">
+          <div class="t-name">${hName}</div>
+          <div class="score-box">`;
+    if (played) {
+      html += `<div class="score-num">${r.hg}</div><div class="score-dash">-</div><div class="score-num">${r.ag}</div>`;
+    } else {
+      html += `<div class="score-pending">VS</div>`;
+    }
+    html += `</div><div class="t-name">${aName}</div></div>
+        <button class="toggle-entry" onclick="toggleEntry('${key}')">${isOpen ? '✕ Cerrar' : played ? '✏️ Editar' : '+ Resultado'}</button>
+      </div>`;
+
+    // Live stats chips
+    if (played) {
+      html += `<div class="stats-row">`;
+      if (r.scorers) html += `<div class="stat-chip goal">⚽ <span>${r.scorers || '—'}</span></div>`;
+      if (r.hCorners || r.aCorners) html += `<div class="stat-chip corner">🚩 Corners: <span>${r.hCorners||0} – ${r.aCorners||0}</span></div>`;
+      if (r.hYellow || r.aYellow) html += `<div class="stat-chip yellow-card">🟨 Amarillas: <span>${r.hYellow||0} – ${r.aYellow||0}</span></div>`;
+      if (r.hRed || r.aRed) html += `<div class="stat-chip red-card">🟥 Rojas: <span>${r.hRed||0} – ${r.aRed||0}</span></div>`;
+      html += `</div>`;
+    }
+
+    // Entry panel
+    if (isOpen) {
+      html += `<div class="result-panel">
+        <h4>📋 Ingresar Resultado Real</h4>
+        <div class="rp-row">
+          <div class="rp-label">Marcador</div>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:0.8rem;color:var(--muted);">${hName.split(' ')[1] || hName}</span>
+          <input class="rp-input" type="number" min="0" max="20" id="hg_${key}" value="${r.hg ?? ''}" placeholder="0">
+          <span style="color:var(--muted);font-family:'Bebas Neue',sans-serif;">–</span>
+          <input class="rp-input" type="number" min="0" max="20" id="ag_${key}" value="${r.ag ?? ''}" placeholder="0">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:0.8rem;color:var(--muted);">${aName.split(' ')[1] || aName}</span>
+        </div>
+        <div class="rp-row">
+          <div class="rp-label">Goleadores</div>
+          <input class="rp-text" type="text" id="sc_${key}" value="${r.scorers||''}" placeholder="Ej: Mbappé 23', Giroud 67'">
+        </div>
+        <div class="rp-row">
+          <div class="rp-label">Corners</div>
+          <span style="font-size:0.78rem;color:var(--muted);font-family:'Barlow Condensed',sans-serif;">${hName.split(' ')[1]||hName}:</span>
+          <input class="rp-input" type="number" min="0" max="30" id="hc_${key}" value="${r.hCorners??''}" placeholder="0">
+          <span style="font-size:0.78rem;color:var(--muted);font-family:'Barlow Condensed',sans-serif;">${aName.split(' ')[1]||aName}:</span>
+          <input class="rp-input" type="number" min="0" max="30" id="ac_${key}" value="${r.aCorners??''}" placeholder="0">
+        </div>
+        <div class="rp-row">
+          <div class="rp-label">Amarillas</div>
+          <span style="font-size:0.78rem;color:var(--muted);font-family:'Barlow Condensed',sans-serif;">${hName.split(' ')[1]||hName}:</span>
+          <input class="rp-input" type="number" min="0" max="10" id="hy_${key}" value="${r.hYellow??''}" placeholder="0">
+          <span style="font-size:0.78rem;color:var(--muted);font-family:'Barlow Condensed',sans-serif;">${aName.split(' ')[1]||aName}:</span>
+          <input class="rp-input" type="number" min="0" max="10" id="ay_${key}" value="${r.aYellow??''}" placeholder="0">
+        </div>
+        <div class="rp-row">
+          <div class="rp-label">Rojas</div>
+          <span style="font-size:0.78rem;color:var(--muted);font-family:'Barlow Condensed',sans-serif;">${hName.split(' ')[1]||hName}:</span>
+          <input class="rp-input" type="number" min="0" max="5" id="hr_${key}" value="${r.hRed??''}" placeholder="0">
+          <span style="font-size:0.78rem;color:var(--muted);font-family:'Barlow Condensed',sans-serif;">${aName.split(' ')[1]||aName}:</span>
+          <input class="rp-input" type="number" min="0" max="5" id="ar_${key}" value="${r.aRed??''}" placeholder="0">
+        </div>
+        <div class="rp-row" style="margin-top:6px;">
+          <button class="btn-save" onclick="saveResult('${key}','${group.id}')">💾 Guardar</button>
+          ${played ? `<button class="btn-clear" onclick="clearResult('${key}')">🗑 Borrar</button>` : ''}
+        </div>
+      </div>`;
+    }
+
+    // Analysis + bet
+    html += `<div class="analysis-block">
+      <div class="analysis-label">Análisis · Predicción <span class="predicted-score">${m.predScore}</span></div>
+      <div class="analysis-text">${m.analysis}</div>
+      <div class="bet-row">
+        <span class="bet-tag">${m.tip.type}</span>
+        <span style="color:${riskColor};font-size:0.72rem;font-weight:700;">${riskLabel}</span>
+        · Cuota aprox: <strong style="color:var(--gold)">${m.tip.odds}</strong> — ${m.tip.note}
+      </div>
+    </div>`;
+
+    html += `</div>`; // match-card
+  });
+
+  content.innerHTML = html;
+}
+
+function toggleEntry(key) {
+  openEntry = openEntry === key ? null : key;
+  renderGroupContent();
+}
+
+function saveResult(key, groupId) {
+  const hg = document.getElementById('hg_'+key)?.value;
+  const ag = document.getElementById('ag_'+key)?.value;
+  state.results[key] = {
+    hg, ag,
+    scorers: document.getElementById('sc_'+key)?.value || '',
+    hCorners: document.getElementById('hc_'+key)?.value || '',
+    aCorners: document.getElementById('ac_'+key)?.value || '',
+    hYellow: document.getElementById('hy_'+key)?.value || '',
+    aYellow: document.getElementById('ay_'+key)?.value || '',
+    hRed: document.getElementById('hr_'+key)?.value || '',
+    aRed: document.getElementById('ar_'+key)?.value || '',
+  };
+  openEntry = null;
+  save();
+  renderGroupContent();
+  updateSummaryBar();
+}
+
+function clearResult(key) {
+  delete state.results[key];
+  openEntry = null;
+  save();
+  renderGroupContent();
+  updateSummaryBar();
+}
+
+// ══════════════════════════════════════════════════
+// QUALIFIERS FROM GROUPS
+// ══════════════════════════════════════════════════
+function getGroupQualifiers() {
+  const qs = {};
+  GROUPS_DATA.forEach(g => {
+    const st = getStandings(g);
+    qs[g.id] = { first: st[0].name, second: st[1].name, third: st[2].name, thirdPts: st[2].pts, thirdDG: st[2].dg };
+  });
+  return qs;
+}
+
+// Bracket slot labels: first two from each group qualify directly, 8 best thirds also qualify
+// For simplicity, we show predicted qualifiers (using predicted scores if no real result)
+function getPredictedQualifiers() {
+  const qs = {};
+  GROUPS_DATA.forEach(g => {
+    const pts = {};
+    g.teams.forEach((_, i) => pts[i] = { pts:0, gf:0, dg:0 });
+    g.matches.forEach(m => {
+      const [hg, ag] = m.predScore.split('-').map(Number);
+      pts[m.home].gf += hg; pts[m.away].gf += ag;
+      pts[m.home].dg += hg-ag; pts[m.away].dg += ag-hg;
+      if (hg > ag) { pts[m.home].pts += 3; }
+      else if (hg === ag) { pts[m.home].pts++; pts[m.away].pts++; }
+      else { pts[m.away].pts += 3; }
+    });
+    const sorted = Object.entries(pts).sort((a,b) => b[1].pts - a[1].pts || b[1].dg - a[1].dg || b[1].gf - a[1].gf);
+    qs[g.id] = { first: g.teams[+sorted[0][0]], second: g.teams[+sorted[1][0]], third: g.teams[+sorted[2][0]] };
+  });
+  return qs;
+}
+
+function effectiveQualifiers() {
+  const real = getGroupQualifiers();
+  const pred = getPredictedQualifiers();
+  const out = {};
+  GROUPS_DATA.forEach(g => {
+    const rq = real[g.id];
+    // check if group is fully played
+    const played = g.matches.every((_, i) => {
+      const r = state.results[g.id+'_'+i];
+      return r && r.hg !== '' && r.ag !== '';
+    });
+    out[g.id] = played ? rq : pred[g.id];
+  });
+  return out;
+}
+
+// ══════════════════════════════════════════════════
+// BRACKET
+// ══════════════════════════════════════════════════
+// 48 teams → 32 qualifiers → R32 → R16 → QF → SF → Final
+// Group structure for R32:
+// Slot pairs: A1vsB2, C1vsD2, E1vsF2, G1vsH2, I1vsJ2, K1vsL2 (6 matches)
+//             B1vsA2, D1vsC2, F1vsE2, H1vsG2, J1vsI2, L1vsK2 (6 matches)
+// + 4 best thirds vs 4 remaining thirds (simplified as TBD based on thirds)
+// We'll show 16 matches in R32, then 8 in R16, 4 QF, 2 SF, 1 Final
+
+const BRACKET_ROUNDS = [
+  { id:'r32', label:'16avos', matches:16 },
+  { id:'r16', label:'Octavos', matches:8 },
+  { id:'qf', label:'Cuartos', matches:4 },
+  { id:'sf', label:'Semis', matches:2 },
+  { id:'final', label:'Final', matches:1 },
+];
+
+function getBracketSlots() {
+  const q = effectiveQualifiers();
+  // R32 matchups based on FIFA bracket rules (simplified)
+  const slots = [
+    // First half bracket
+    [q.A.first,  q.B.second],
+    [q.C.first,  q.D.second],
+    [q.E.first,  q.F.second],
+    [q.G.first,  q.H.second],
+    [q.I.first,  q.J.second],
+    [q.K.first,  q.L.second],
+    [q.B.first,  q.A.second],
+    [q.D.first,  q.C.second],
+    // Second half bracket
+    [q.F.first,  q.E.second],
+    [q.H.first,  q.G.second],
+    [q.J.first,  q.I.second],
+    [q.L.first,  q.K.second],
+    // Best thirds (simplified)
+    [q.A.third + ' (3°)', q.C.third + ' (3°)'],
+    [q.B.third + ' (3°)', q.D.third + ' (3°)'],
+    [q.E.third + ' (3°)', q.G.third + ' (3°)'],
+    [q.I.third + ' (3°)', q.K.third + ' (3°)'],
+  ];
+  return slots;
+}
+
+function getBracketMatch(round, idx) {
+  const key = `br_${round}_${idx}`;
+  return state.bracketResults[key] || { h:'', a:'', hg:'', ag:'', winner:'' };
+}
+
+function getBracketTeam(round, idx, side) {
+  if (round === 'r32') {
+    const slots = getBracketSlots();
+    return side === 'h' ? (slots[idx] ? slots[idx][0] : '?') : (slots[idx] ? slots[idx][1] : '?');
+  }
+  // Advance from previous round
+  const prevRound = round === 'r16' ? 'r32' : round === 'qf' ? 'r16' : round === 'sf' ? 'qf' : 'sf';
+  const prevMatchIdx = idx * 2 + (side === 'h' ? 0 : 1);
+  const prev = getBracketMatch(prevRound, prevMatchIdx);
+  if (prev.winner) return prev.winner;
+  return `Ganador P${prevMatchIdx+1}`;
+}
+
+function renderBracket() {
+  const bracket = document.getElementById('bracket-view');
+  let html = '';
+  BRACKET_ROUNDS.forEach(round => {
+    html += `<div class="round-col"><div class="round-title">${round.label}</div><div class="round-matches">`;
+    for (let i = 0; i < round.matches; i++) {
+      const bm = getBracketMatch(round.id, i);
+      const ht = getBracketTeam(round.id, i, 'h');
+      const at = getBracketTeam(round.id, i, 'a');
+      const hWin = bm.winner && bm.winner === ht;
+      const aWin = bm.winner && bm.winner === at;
+      const hScore = bm.hg !== '' ? bm.hg : '';
+      const aScore = bm.ag !== '' ? bm.ag : '';
+      html += `<div class="bracket-match" onclick="openBracketModal('${round.id}',${i})">
+        <div class="bm-team ${hWin?'winner':''}">
+          <span>${ht.length > 18 ? ht.substring(0,18)+'…' : ht}</span>
+          ${hScore !== '' ? `<span class="bm-score">${hScore}</span>` : ''}
+        </div>
+        <div class="bm-sep"></div>
+        <div class="bm-team ${aWin?'winner':''}">
+          <span>${at.length > 18 ? at.substring(0,18)+'…' : at}</span>
+          ${aScore !== '' ? `<span class="bm-score">${aScore}</span>` : ''}
+        </div>
+        ${bm.date ? `<div class="bm-date">${bm.date}</div>` : ''}
+      </div>`;
+    }
+    html += `</div></div>`;
+  });
+  bracket.innerHTML = html;
+}
+
+function openBracketModal(round, idx) {
+  const bm = getBracketMatch(round, idx);
+  const ht = getBracketTeam(round, idx, 'h');
+  const at = getBracketTeam(round, idx, 'a');
+  const roundLabel = BRACKET_ROUNDS.find(r => r.id === round)?.label || round;
+  document.getElementById('bm-title').textContent = `${roundLabel} · Partido ${idx+1}`;
+  document.getElementById('bm-body').innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+      <div style="flex:1;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.95rem;">${ht}</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.8rem;color:var(--muted);">vs</div>
+      <div style="flex:1;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.95rem;text-align:right;">${at}</div>
+    </div>
+    <div class="rp-row">
+      <div class="rp-label">Marcador</div>
+      <input class="rp-input" type="number" id="bm_hg" value="${bm.hg}" placeholder="0" min="0">
+      <span style="color:var(--muted);font-family:'Bebas Neue',sans-serif;padding:0 4px;">–</span>
+      <input class="rp-input" type="number" id="bm_ag" value="${bm.ag}" placeholder="0" min="0">
+    </div>
+    <div class="rp-row">
+      <div class="rp-label">Goleadores</div>
+      <input class="rp-text" type="text" id="bm_sc" value="${bm.scorers||''}" placeholder="Goleadores...">
+    </div>
+    <div class="rp-row">
+      <div class="rp-label">Corners</div>
+      <input class="rp-input" type="number" id="bm_hc" value="${bm.hCorners||''}" placeholder="0">
+      <span style="color:var(--muted);padding:0 4px;font-size:0.8rem;">–</span>
+      <input class="rp-input" type="number" id="bm_ac" value="${bm.aCorners||''}" placeholder="0">
+    </div>
+    <div class="rp-row">
+      <div class="rp-label">Amarillas</div>
+      <input class="rp-input" type="number" id="bm_hy" value="${bm.hYellow||''}" placeholder="0">
+      <span style="color:var(--muted);padding:0 4px;font-size:0.8rem;">–</span>
+      <input class="rp-input" type="number" id="bm_ay" value="${bm.aYellow||''}" placeholder="0">
+    </div>
+    <div class="rp-row">
+      <div class="rp-label">Rojas</div>
+      <input class="rp-input" type="number" id="bm_hr" value="${bm.hRed||''}" placeholder="0">
+      <span style="color:var(--muted);padding:0 4px;font-size:0.8rem;">–</span>
+      <input class="rp-input" type="number" id="bm_ar" value="${bm.aRed||''}" placeholder="0">
+    </div>
+    <div class="rp-row">
+      <div class="rp-label">Ganador</div>
+      <select id="bm_winner" style="background:var(--bg2);border:1px solid rgba(255,255,255,0.1);color:var(--text);font-family:'Barlow Condensed',sans-serif;padding:5px 10px;border-radius:4px;flex:1;">
+        <option value="">— Seleccionar ganador —</option>
+        <option value="${ht}" ${bm.winner===ht?'selected':''}>${ht}</option>
+        <option value="${at}" ${bm.winner===at?'selected':''}>${at}</option>
+      </select>
+    </div>
+    <div class="rp-row">
+      <div class="rp-label">Fecha</div>
+      <input class="rp-text" type="text" id="bm_date" value="${bm.date||''}" placeholder="Ej: 4 Jul" style="max-width:120px;">
+    </div>
+    <div class="rp-row" style="margin-top:8px;gap:8px;">
+      <button class="btn-save" onclick="saveBracketResult('${round}',${idx},'${ht.replace(/'/g,"\\'")}','${at.replace(/'/g,"\\'")}')">💾 Guardar</button>
+      ${bm.hg !== '' ? `<button class="btn-clear" onclick="clearBracketResult('${round}',${idx})">🗑 Borrar</button>` : ''}
+    </div>
+  `;
+  document.getElementById('bracket-modal').classList.add('open');
+}
+
+function saveBracketResult(round, idx, ht, at) {
+  const key = `br_${round}_${idx}`;
+  state.bracketResults[key] = {
+    hg: document.getElementById('bm_hg')?.value || '',
+    ag: document.getElementById('bm_ag')?.value || '',
+    scorers: document.getElementById('bm_sc')?.value || '',
+    hCorners: document.getElementById('bm_hc')?.value || '',
+    aCorners: document.getElementById('bm_ac')?.value || '',
+    hYellow: document.getElementById('bm_hy')?.value || '',
+    aYellow: document.getElementById('bm_ay')?.value || '',
+    hRed: document.getElementById('bm_hr')?.value || '',
+    aRed: document.getElementById('bm_ar')?.value || '',
+    winner: document.getElementById('bm_winner')?.value || '',
+    date: document.getElementById('bm_date')?.value || '',
+  };
+  save();
+  closeModal();
+  renderBracket();
+  updateSummaryBar();
+}
+
+function clearBracketResult(round, idx) {
+  const key = `br_${round}_${idx}`;
+  delete state.bracketResults[key];
+  save();
+  closeModal();
+  renderBracket();
+  updateSummaryBar();
+}
+
+function closeModal() {
+  document.getElementById('bracket-modal').classList.remove('open');
+}
+document.getElementById('bracket-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+
+// ══════════════════════════════════════════════════
+// SCORERS
+// ══════════════════════════════════════════════════
+function extractScorers() {
+  const scorerMap = {};
+  const addScorers = (scorersStr, matchLabel) => {
+    if (!scorersStr) return;
+    scorersStr.split(',').forEach(part => {
+      const s = part.trim();
+      if (!s) return;
+      // Format: "Name 23' 55'" or "Name 23'" or "Name 23' pen"
+      const match = s.match(/^(.+?)\s+([\d',()\s\w]+)$/);
+      const name = match ? match[1].trim() : s.split(' ')[0];
+      const goalParts = s.match(/\d+'/g) || [];
+      const count = goalParts.length || 1;
+      if (!scorerMap[name]) scorerMap[name] = { goals:0, matches:[] };
+      scorerMap[name].goals += count;
+      scorerMap[name].matches.push(matchLabel);
+    });
+  };
+  // Group stage
+  GROUPS_DATA.forEach(g => {
+    g.matches.forEach((m, i) => {
+      const r = state.results[g.id+'_'+i];
+      const src = (r && r.scorers) ? r.scorers : null;
+      if (src) addScorers(src, `Grupo ${g.id}`);
+    });
+  });
+  // Bracket
+  Object.values(state.bracketResults).forEach(bm => {
+    if (bm.scorers) addScorers(bm.scorers, 'Eliminatoria');
+  });
+  return Object.entries(scorerMap).sort((a,b) => b[1].goals - a[1].goals).slice(0,20);
+}
+
+function renderScorers() {
+  const scorers = extractScorers();
+  const view = document.getElementById('scorers-view');
+  if (!scorers.length) {
+    view.innerHTML = `<div class="no-data">Aún no hay goleadores registrados.<br>Ingresa resultados en la sección Grupos.</div>`;
+    return;
+  }
+  let html = `<table class="scorer-table"><thead><tr><th>Pos</th><th>Jugador</th><th>Goles</th><th>Fases</th></tr></thead><tbody>`;
+  scorers.forEach(([name, data], i) => {
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+    html += `<tr>
+      <td class="rank">${medal || (i+1)}</td>
+      <td><strong>${name}</strong></td>
+      <td class="goals-count">${data.goals}</td>
+      <td style="font-size:0.75rem;color:var(--muted)">${[...new Set(data.matches)].join(', ')}</td>
+    </tr>`;
+  });
+  html += `</tbody></table>`;
+  view.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════
+// CARDS
+// ══════════════════════════════════════════════════
+function renderCards() {
+  const teamCards = {};
+  const process = (teamName, yellow, red) => {
+    if (!teamName) return;
+    if (!teamCards[teamName]) teamCards[teamName] = { yellow:0, red:0 };
+    teamCards[teamName].yellow += parseInt(yellow)||0;
+    teamCards[teamName].red += parseInt(red)||0;
+  };
+  GROUPS_DATA.forEach(g => {
+    g.matches.forEach((m, i) => {
+      const r = state.results[g.id+'_'+i];
+      if (!r) return;
+      process(g.teams[m.home], r.hYellow, r.hRed);
+      process(g.teams[m.away], r.aYellow, r.aRed);
+    });
+  });
+  const view = document.getElementById('cards-view');
+  const sorted = Object.entries(teamCards).sort((a,b) => (b[1].yellow*1 + b[1].red*3) - (a[1].yellow*1 + a[1].red*3));
+  if (!sorted.length) {
+    view.innerHTML = `<div class="no-data">Aún no hay datos de tarjetas.<br>Ingresa resultados en la sección Grupos.</div>`;
+    return;
+  }
+  let html = `<table class="scorer-table"><thead><tr><th>Equipo</th><th>🟨 Amarillas</th><th>🟥 Rojas</th><th>Total (ponderado)</th></tr></thead><tbody>`;
+  sorted.forEach(([team, c]) => {
+    const total = c.yellow + c.red * 3;
+    html += `<tr><td><strong>${team}</strong></td>
+      <td style="color:var(--yellow);font-family:'Bebas Neue',sans-serif;font-size:1.2rem;">${c.yellow}</td>
+      <td style="color:var(--red);font-family:'Bebas Neue',sans-serif;font-size:1.2rem;">${c.red}</td>
+      <td style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--muted)">${total}</td></tr>`;
+  });
+  html += `</tbody></table>`;
+  view.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════
+// CORNERS
+// ══════════════════════════════════════════════════
+function renderCorners() {
+  const view = document.getElementById('corners-view');
+  const matchCorners = [];
+  GROUPS_DATA.forEach(g => {
+    g.matches.forEach((m, i) => {
+      const r = state.results[g.id+'_'+i];
+      if (!r || (!r.hCorners && !r.aCorners)) return;
+      const total = (parseInt(r.hCorners)||0) + (parseInt(r.aCorners)||0);
+      matchCorners.push({ home: g.teams[m.home], away: g.teams[m.away], hc: parseInt(r.hCorners)||0, ac: parseInt(r.aCorners)||0, total, date: m.date });
+    });
+  });
+  if (!matchCorners.length) {
+    view.innerHTML = `<div class="no-data">Aún no hay datos de corners.<br>Ingresa resultados en la sección Grupos.</div>`;
+    return;
+  }
+  matchCorners.sort((a,b) => b.total - a.total);
+  let html = `<table class="scorer-table"><thead><tr><th>Partido</th><th>🚩 Local</th><th>🚩 Visitante</th><th>Total</th></tr></thead><tbody>`;
+  matchCorners.forEach(mc => {
+    html += `<tr><td style="font-size:0.8rem"><strong>${mc.home}</strong><br><span style="color:var(--muted);font-size:0.7rem">vs ${mc.away}</span></td>
+      <td style="color:var(--blue);font-family:'Bebas Neue',sans-serif;font-size:1.2rem;">${mc.hc}</td>
+      <td style="color:var(--blue);font-family:'Bebas Neue',sans-serif;font-size:1.2rem;">${mc.ac}</td>
+      <td style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--gold)">${mc.total}</td></tr>`;
+  });
+  html += `</tbody></table>`;
+  view.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════
+// SUMMARY BAR
+// ══════════════════════════════════════════════════
+function updateSummaryBar() {
+  let goals=0, yellows=0, reds=0, corners=0, played=0;
+  GROUPS_DATA.forEach(g => {
+    g.matches.forEach((_, i) => {
+      const r = state.results[g.id+'_'+i];
+      if (!r || r.hg === '' || r.ag === '') return;
+      played++;
+      goals += (parseInt(r.hg)||0) + (parseInt(r.ag)||0);
+      yellows += (parseInt(r.hYellow)||0) + (parseInt(r.aYellow)||0);
+      reds += (parseInt(r.hRed)||0) + (parseInt(r.aRed)||0);
+      corners += (parseInt(r.hCorners)||0) + (parseInt(r.aCorners)||0);
+    });
+  });
+  Object.values(state.bracketResults).forEach(bm => {
+    if (bm.hg === '' && bm.ag === '') return;
+    goals += (parseInt(bm.hg)||0) + (parseInt(bm.ag)||0);
+    yellows += (parseInt(bm.hYellow)||0) + (parseInt(bm.aYellow)||0);
+    reds += (parseInt(bm.hRed)||0) + (parseInt(bm.aRed)||0);
+    corners += (parseInt(bm.hCorners)||0) + (parseInt(bm.aCorners)||0);
+  });
+  document.getElementById('sb-goals').textContent = goals;
+  document.getElementById('sb-yellows').textContent = yellows;
+  document.getElementById('sb-reds').textContent = reds;
+  document.getElementById('sb-corners').textContent = corners;
+  document.getElementById('sb-played').textContent = played;
+}
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+renderGroupSection();
+updateSummaryBar();
+</script>
+</body>
+</html>
